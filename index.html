@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="TaskFire">
-<link rel="manifest" href="manifest.json">
 <title>TaskFire</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -183,7 +182,6 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
   .content { padding:18px 16px 80px; }
   header { padding:0 16px; }
   #toast { width:calc(100vw - 28px); right:14px; bottom:14px; }
-  .hbtn span { display:none; }
 }
 </style>
 </head>
@@ -193,15 +191,14 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
   <div class="logo">Task<span class="logo-fire">Fire</span><span class="logo-badge" id="ovBadge">0 overdue</span></div>
   <div class="header-mid"><div class="pdot" id="ndot"></div><span id="nlbl">Reminders off</span></div>
   <div class="hactions">
-    <button class="hbtn primary" onclick="downloadApp()">⬇ <span>Download App</span></button>
-    <button class="hbtn" id="enableBtn" onclick="reqNotifs()">🔔 <span>Enable Reminders</span></button>
-    <button class="hbtn hidden" id="installBtn" onclick="installPWA()">📲 <span>Install</span></button>
+    <button class="hbtn" id="enableBtn" onclick="reqNotifs()">🔔 Enable Reminders</button>
+    <button class="hbtn hidden" id="installBtn" onclick="installPWA()">📲 Install App</button>
   </div>
 </header>
 <div class="prog-wrap"><div class="prog-fill" id="progFill"></div></div>
 
 <div id="installStrip">
-  <span>Install TaskFire as a desktop app — reminders fire even when minimized</span>
+  <span>📲 Install TaskFire as a desktop app — notifications fire even when minimized</span>
   <div style="display:flex;gap:8px">
     <button onclick="installPWA()">Install now</button>
     <button class="dismiss-strip" onclick="dismissStrip()">✕</button>
@@ -212,11 +209,11 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
   <aside class="sidebar">
     <div style="margin-bottom:6px">
       <div class="sb-label">Views</div>
-      <div class="navitem on" onclick="setView('today',this)" id="nv-today"><div class="navleft"><span class="navicon">☀️</span>Today</div><span class="navcnt" id="nc-today">0</span></div>
-      <div class="navitem" onclick="setView('upcoming',this)" id="nv-upcoming"><div class="navleft"><span class="navicon">📅</span>Upcoming</div><span class="navcnt" id="nc-upcoming">0</span></div>
-      <div class="navitem" onclick="setView('all',this)" id="nv-all"><div class="navleft"><span class="navicon">📋</span>All Tasks</div><span class="navcnt" id="nc-all">0</span></div>
-      <div class="navitem" onclick="setView('done',this)" id="nv-done"><div class="navleft"><span class="navicon">✅</span>Completed</div><span class="navcnt" id="nc-done">0</span></div>
-      <div class="navitem" onclick="setView('overdue',this)" id="nv-overdue"><div class="navleft"><span class="navicon">⚠️</span>Overdue</div><span class="navcnt red" id="nc-overdue">0</span></div>
+      <div class="navitem on" onclick="setView('today',this)"><div class="navleft"><span class="navicon">☀️</span>Today</div><span class="navcnt" id="nc-today">0</span></div>
+      <div class="navitem" onclick="setView('upcoming',this)"><div class="navleft"><span class="navicon">📅</span>Upcoming</div><span class="navcnt" id="nc-upcoming">0</span></div>
+      <div class="navitem" onclick="setView('all',this)"><div class="navleft"><span class="navicon">📋</span>All Tasks</div><span class="navcnt" id="nc-all">0</span></div>
+      <div class="navitem" onclick="setView('done',this)"><div class="navleft"><span class="navicon">✅</span>Completed</div><span class="navcnt" id="nc-done">0</span></div>
+      <div class="navitem" onclick="setView('overdue',this)"><div class="navleft"><span class="navicon">⚠️</span>Overdue</div><span class="navcnt red" id="nc-overdue">0</span></div>
     </div>
     <div class="sbdiv"></div>
     <div style="margin-bottom:6px">
@@ -241,13 +238,19 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
   <main class="content">
     <div class="quickadd">
       <div class="qa-row1">
-        <input class="qa-input" id="tName" type="text" placeholder="Add a task… press N to focus" />
+        <input class="qa-input" id="tName" type="text" placeholder="Add a task… (press N to focus)" />
         <button class="qa-addbtn" onclick="addTask()">Add</button>
       </div>
       <div class="qa-row2">
         <div class="qafield"><label>Date</label><input type="date" id="tDate"/></div>
         <div class="qafield"><label>Time</label><input type="time" id="tTime"/></div>
-        <div class="qafield"><label>Priority</label><select id="tPri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div>
+        <div class="qafield"><label>Priority</label>
+          <select id="tPri">
+            <option value="high">High</option>
+            <option value="medium" selected>Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -276,178 +279,237 @@ header { display:flex; align-items:center; justify-content:space-between; paddin
 <div id="snack"></div>
 
 <script>
+// ── CONFIG ─────────────────────────────────────────────────────────
+const API_KEY = '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';
+const INTERVAL = 30 * 60 * 1000; // 30 minutes
+
+// ── STATE ──────────────────────────────────────────────────────────
 let tasks=[], view='today', priF='all', dP=null, nextFire=null, loopT=null, cdT=null;
-const INTERVAL=30*60*1000;
 
-function load(){ try{tasks=JSON.parse(localStorage.getItem('tf3')||'[]')}catch(e){tasks=[]} }
-function save(){ localStorage.setItem('tf3',JSON.stringify(tasks)) }
+// ── STORAGE ────────────────────────────────────────────────────────
+function load(){ try{ tasks=JSON.parse(localStorage.getItem('tf3')||'[]'); }catch(e){ tasks=[]; } }
+function save(){ localStorage.setItem('tf3', JSON.stringify(tasks)); }
 
-// DOWNLOAD
-function downloadApp(){
-  const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
-  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'taskfire.html'});
-  a.click(); URL.revokeObjectURL(a.href);
-  snack('Downloaded! Open taskfire.html in Chrome or Edge.');
-}
-
-// PWA
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault(); dP=e;
-  if(!localStorage.getItem('tf_sd')) document.getElementById('installStrip').classList.add('show');
+// ── PWA INSTALL ────────────────────────────────────────────────────
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); dP = e;
+  if (!localStorage.getItem('tf_sd')) document.getElementById('installStrip').classList.add('show');
   document.getElementById('installBtn').classList.remove('hidden');
 });
 function installPWA(){
-  if(!dP) return; dP.prompt();
-  dP.userChoice.then(()=>{ dP=null; document.getElementById('installStrip').classList.remove('show'); document.getElementById('installBtn').classList.add('hidden'); });
+  if (!dP) { snack('Open this site in Chrome or Edge to install.'); return; }
+  dP.prompt();
+  dP.userChoice.then(() => {
+    dP = null;
+    document.getElementById('installStrip').classList.remove('show');
+    document.getElementById('installBtn').classList.add('hidden');
+  });
 }
 function dismissStrip(){ localStorage.setItem('tf_sd','1'); document.getElementById('installStrip').classList.remove('show'); }
-window.addEventListener('appinstalled',()=>{ document.getElementById('installStrip').classList.remove('show'); snack('App installed! Launch from your desktop.'); });
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installStrip').classList.remove('show');
+  snack('App installed! Launch from your desktop anytime.');
+});
 
-// NOTIFICATIONS
-function checkPerm(){ if(Notification.permission==='granted') activateNotifs(); }
+// ── NOTIFICATIONS ──────────────────────────────────────────────────
+function checkPerm(){ if (Notification.permission === 'granted') activateNotifs(); }
 function reqNotifs(){
-  Notification.requestPermission().then(p=>{
-    if(p==='granted'){ activateNotifs(); startLoop(); setTimeout(fireReminder,2000); }
+  Notification.requestPermission().then(p => {
+    if (p === 'granted'){ activateNotifs(); startLoop(); setTimeout(fireReminder, 2000); }
     else snack('Notifications blocked — enable in browser settings.');
   });
 }
 function activateNotifs(){
-  document.getElementById('ndot').className='pdot on';
-  document.getElementById('nlbl').textContent='Reminders on';
+  document.getElementById('ndot').className = 'pdot on';
+  document.getElementById('nlbl').textContent = 'Reminders on';
   document.getElementById('enableBtn').classList.add('hidden');
-  document.getElementById('cdChip').style.display='flex';
-  if(!loopT) startLoop();
+  document.getElementById('cdChip').style.display = 'flex';
+  if (!loopT) startLoop();
 }
 function startLoop(){
-  if(loopT) clearInterval(loopT); if(cdT) clearInterval(cdT);
-  nextFire=Date.now()+INTERVAL;
-  loopT=setInterval(()=>{ nextFire=Date.now()+INTERVAL; fireReminder(); },INTERVAL);
-  cdT=setInterval(tickCD,1000);
+  if (loopT) clearInterval(loopT);
+  if (cdT) clearInterval(cdT);
+  nextFire = Date.now() + INTERVAL;
+  loopT = setInterval(() => { nextFire = Date.now() + INTERVAL; fireReminder(); }, INTERVAL);
+  cdT = setInterval(tickCD, 1000);
 }
 function tickCD(){
-  if(!nextFire) return;
-  const d=Math.max(0,nextFire-Date.now());
-  document.getElementById('cdTime').textContent=String(Math.floor(d/60000)).padStart(2,'0')+':'+String(Math.floor((d%60000)/1000)).padStart(2,'0');
+  if (!nextFire) return;
+  const d = Math.max(0, nextFire - Date.now());
+  document.getElementById('cdTime').textContent =
+    String(Math.floor(d/60000)).padStart(2,'0') + ':' +
+    String(Math.floor((d%60000)/1000)).padStart(2,'0');
 }
 async function fireReminder(){
-  const pend=tasks.filter(t=>!t.done);
-  if(!pend.length) return;
-  const sorted=[...pend].sort((a,b)=>{ const p={high:0,medium:1,low:2}; if(p[a.priority]!==p[b.priority]) return p[a.priority]-p[b.priority]; return (a.dueDate||'z').localeCompare(b.dueDate||'z'); });
-  const top=sorted.slice(0,3);
+  const pend = tasks.filter(t => !t.done);
+  if (!pend.length) return;
+  const sorted = [...pend].sort((a,b) => {
+    const p = {high:0,medium:1,low:2};
+    if (p[a.priority] !== p[b.priority]) return p[a.priority] - p[b.priority];
+    return (a.dueDate||'z').localeCompare(b.dueDate||'z');
+  });
+  const top = sorted.slice(0, 3);
   showToast(top);
-  const q=await getQuote(top[0]);
+  const q = await getQuote(top[0]);
   updateTQ(q);
-  if(Notification.permission==='granted'){
-    try{ new Notification('TaskFire — '+pend.length+' pending',{body:top.map(t=>'• '+t.name).join('\n'),icon:'icon-192.png',tag:'tf-r',silent:false}); }catch(e){}
+  if (Notification.permission === 'granted'){
+    try {
+      new Notification('TaskFire — ' + pend.length + ' pending', {
+        body: top.map(t => '• ' + t.name).join('\n'),
+        icon: 'https://api.iconify.design/noto:fire.svg',
+        tag: 'tf-r',
+        silent: false
+      });
+    } catch(e){}
   }
 }
 function showToast(list){
-  document.getElementById('tEyebrow').textContent='⚡ '+list.length+' task'+(list.length>1?'s':'')+' need attention';
-  document.getElementById('tTasks').innerHTML=list.map(t=>`<div class="t-trow"><div class="t-tname">${esc(t.name)}</div><div class="t-tsub">${t.dueDate?fmtD(t.dueDate):'No deadline'}${t.dueTime?' · '+t.dueTime:''} · ${t.priority}</div></div>`).join('');
-  document.getElementById('tQ').innerHTML='<span class="t-ql">Generating quote...</span>';
-  document.getElementById('tAuthor').textContent='';
+  document.getElementById('tEyebrow').textContent = '⚡ ' + list.length + ' task' + (list.length>1?'s':'') + ' need attention';
+  document.getElementById('tTasks').innerHTML = list.map(t =>
+    `<div class="t-trow">
+      <div class="t-tname">${esc(t.name)}</div>
+      <div class="t-tsub">${t.dueDate ? fmtD(t.dueDate) : 'No deadline'}${t.dueTime?' · '+t.dueTime:''} · ${t.priority} priority</div>
+    </div>`
+  ).join('');
+  document.getElementById('tQ').innerHTML = '<span class="t-ql">Generating quote...</span>';
+  document.getElementById('tAuthor').textContent = '';
   document.getElementById('toast').classList.add('visible');
-  setTimeout(closeToast,20000);
+  setTimeout(closeToast, 20000);
 }
-function updateTQ(q){ document.getElementById('tQ').textContent='\u201c'+q.text+'\u201d'; document.getElementById('tAuthor').textContent=q.author?'— '+q.author:''; }
+function updateTQ(q){
+  document.getElementById('tQ').textContent = '\u201c' + q.text + '\u201d';
+  document.getElementById('tAuthor').textContent = q.author ? '— ' + q.author : '';
+}
 function closeToast(){ document.getElementById('toast').classList.remove('visible'); }
 
-// CLAUDE
+// ── CLAUDE API (direct) ────────────────────────────────────────────
 async function getQuote(task){
-  try{
-    const r=await fetch('/.netlify/functions/quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({taskName:task.name,priority:task.priority})});
-    const d=await r.json();
-    if(d.error) throw 0;
-    return {text:d.text,author:d.author};
-  }catch(e){ return {text:'Every task you finish is proof of capability. Ship it.',author:'TaskFire'}; }
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 150,
+        system: 'You are a sharp motivational coach. Write ONE punchy original quote (max 2 sentences) tied directly to the task. End with "— [name]". Return ONLY the quote and attribution, nothing else.',
+        messages: [{ role: 'user', content: `Task: "${task.name}". Priority: ${task.priority}. Write a motivational quote for this task.` }]
+      })
+    });
+    const data = await res.json();
+    const raw = (data.content?.[0]?.text || '').trim();
+    const dash = raw.lastIndexOf('—');
+    if (dash > 0) return { text: raw.slice(0, dash).trim().replace(/^"|"$/g,''), author: raw.slice(dash+1).trim() };
+    return { text: raw.replace(/^"|"$/g,''), author: 'Claude' };
+  } catch(e){
+    return { text: 'Every task you finish is proof of capability. Ship it.', author: 'TaskFire' };
+  }
 }
 
-// TASKS
+// ── TASKS CRUD ─────────────────────────────────────────────────────
 function addTask(){
-  const name=document.getElementById('tName').value.trim();
-  if(!name){ document.getElementById('tName').focus(); snack('Enter a task name first.'); return; }
-  tasks.unshift({id:Date.now().toString(),name,dueDate:document.getElementById('tDate').value,dueTime:document.getElementById('tTime').value,priority:document.getElementById('tPri').value,done:false,created:new Date().toISOString()});
+  const name = document.getElementById('tName').value.trim();
+  if (!name){ document.getElementById('tName').focus(); snack('Enter a task name first.'); return; }
+  tasks.unshift({
+    id: Date.now().toString(),
+    name,
+    dueDate: document.getElementById('tDate').value,
+    dueTime: document.getElementById('tTime').value,
+    priority: document.getElementById('tPri').value,
+    done: false,
+    created: new Date().toISOString()
+  });
   save(); render(); updateCounts();
-  document.getElementById('tName').value=''; document.getElementById('tTime').value='';
+  document.getElementById('tName').value = '';
+  document.getElementById('tTime').value = '';
   snack('Task added.');
 }
 function toggle(id){
-  const t=tasks.find(x=>x.id===id); if(!t) return;
-  const el=document.getElementById('ti-'+id);
-  if(!t.done){
-    if(el){ el.classList.add('flash'); setTimeout(()=>{ t.done=true; t.doneAt=new Date().toISOString(); save(); render(); updateCounts(); snack('Done ✓'); },380); }
+  const t = tasks.find(x => x.id === id); if (!t) return;
+  const el = document.getElementById('ti-'+id);
+  if (!t.done){
+    if (el){ el.classList.add('flash'); setTimeout(() => { t.done=true; t.doneAt=new Date().toISOString(); save(); render(); updateCounts(); snack('Done ✓'); }, 380); }
     else { t.done=true; save(); render(); updateCounts(); }
   } else { t.done=false; t.doneAt=null; save(); render(); updateCounts(); }
 }
 function del(id){ tasks=tasks.filter(x=>x.id!==id); save(); render(); updateCounts(); snack('Removed.'); }
 
-// VIEWS
-function setView(v,el){ view=v; document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('on')); el.classList.add('on'); render(); }
-function setPri(p,el){ priF=p; document.querySelectorAll('.pfitem').forEach(n=>n.classList.remove('on')); el.classList.add('on'); render(); }
+// ── VIEWS & FILTERS ────────────────────────────────────────────────
+function setView(v, el){ view=v; document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('on')); el.classList.add('on'); render(); }
+function setPri(p, el){ priF=p; document.querySelectorAll('.pfitem').forEach(n=>n.classList.remove('on')); el.classList.add('on'); render(); }
 
 function getList(){
-  const today=new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
   let list;
-  if(view==='today') list=tasks.filter(t=>!t.done&&(t.dueDate===today||!t.dueDate||isOv(t)));
-  else if(view==='upcoming') list=tasks.filter(t=>!t.done&&t.dueDate&&t.dueDate>today);
-  else if(view==='overdue') list=tasks.filter(t=>isOv(t));
-  else if(view==='done') list=tasks.filter(t=>t.done);
-  else list=tasks.filter(t=>!t.done);
-  if(priF!=='all') list=list.filter(t=>t.priority===priF);
+  if (view==='today')    list = tasks.filter(t => !t.done && (t.dueDate===today || !t.dueDate || isOv(t)));
+  else if (view==='upcoming') list = tasks.filter(t => !t.done && t.dueDate && t.dueDate>today);
+  else if (view==='overdue')  list = tasks.filter(t => isOv(t));
+  else if (view==='done')     list = tasks.filter(t => t.done);
+  else                        list = tasks.filter(t => !t.done);
+  if (priF !== 'all') list = list.filter(t => t.priority === priF);
   return list;
 }
 function sortList(list){
-  const s=document.getElementById('sortSel').value;
-  const p={high:0,medium:1,low:2};
-  return [...list].sort((a,b)=>{
-    if(s==='priority'){ if(p[a.priority]!==p[b.priority]) return p[a.priority]-p[b.priority]; return (a.dueDate||'z').localeCompare(b.dueDate||'z'); }
-    if(s==='due'){ if(!a.dueDate&&!b.dueDate) return 0; if(!a.dueDate) return 1; if(!b.dueDate) return -1; return a.dueDate.localeCompare(b.dueDate); }
-    if(s==='alpha') return a.name.localeCompare(b.name);
-    return new Date(b.created)-new Date(a.created);
+  const s = document.getElementById('sortSel').value;
+  const p = {high:0,medium:1,low:2};
+  return [...list].sort((a,b) => {
+    if (s==='priority'){ if(p[a.priority]!==p[b.priority]) return p[a.priority]-p[b.priority]; return (a.dueDate||'z').localeCompare(b.dueDate||'z'); }
+    if (s==='due'){ if(!a.dueDate&&!b.dueDate) return 0; if(!a.dueDate) return 1; if(!b.dueDate) return -1; return a.dueDate.localeCompare(b.dueDate); }
+    if (s==='alpha') return a.name.localeCompare(b.name);
+    return new Date(b.created) - new Date(a.created);
   });
 }
 
-// RENDER
+// ── RENDER ─────────────────────────────────────────────────────────
 function isOv(t){ if(t.done||!t.dueDate) return false; return new Date(t.dueDate+(t.dueTime?'T'+t.dueTime:'T23:59'))<new Date(); }
 function isToday(t){ return t.dueDate===new Date().toISOString().split('T')[0]; }
-
-const VT={today:'Today',upcoming:'Upcoming',all:'All Tasks',done:'Completed',overdue:'Overdue'};
+const VT = {today:'Today',upcoming:'Upcoming',all:'All Tasks',done:'Completed',overdue:'Overdue'};
 
 function render(){
-  const list=sortList(getList());
-  document.getElementById('vTitle').textContent=VT[view]||'Tasks';
-  document.getElementById('vCnt').textContent=list.length?(list.length+' task'+(list.length>1?'s':'')):'';
-  const el=document.getElementById('taskList');
-  if(!list.length){
-    const M={today:{i:'☀️',t:'All clear for today',s:'Add something above or check upcoming tasks'},upcoming:{i:'📅',t:'Nothing upcoming',s:'Tasks with future dates appear here'},overdue:{i:'✅',t:'No overdue tasks',s:"You're fully on top of things"},done:{i:'🏆',t:'Nothing completed yet',s:'Finish your first task to see it here'},all:{i:'📋',t:'No active tasks',s:'Add your first task above'}};
-    const m=M[view]||M.all;
-    el.innerHTML=`<div class="empty"><div class="empty-ico">${m.i}</div><div class="empty-t">${m.t}</div><div class="empty-s">${m.s}</div></div>`;
+  const list = sortList(getList());
+  document.getElementById('vTitle').textContent = VT[view]||'Tasks';
+  document.getElementById('vCnt').textContent = list.length ? list.length+' task'+(list.length>1?'s':'') : '';
+  const el = document.getElementById('taskList');
+  if (!list.length){
+    const M = {
+      today:   {i:'☀️', t:'All clear for today',      s:'Add something above or check upcoming tasks'},
+      upcoming:{i:'📅', t:'Nothing upcoming',          s:'Tasks with future dates appear here'},
+      overdue: {i:'✅', t:'No overdue tasks',           s:"You're fully on top of things"},
+      done:    {i:'🏆', t:'Nothing completed yet',      s:'Finish your first task to see it here'},
+      all:     {i:'📋', t:'No active tasks',            s:'Add your first task above'}
+    };
+    const m = M[view]||M.all;
+    el.innerHTML = `<div class="empty"><div class="empty-ico">${m.i}</div><div class="empty-t">${m.t}</div><div class="empty-s">${m.s}</div></div>`;
     return;
   }
-  if(view==='today'||view==='all'){
+  if (view==='today'||view==='all'){
     const ov=list.filter(t=>isOv(t)), tod=list.filter(t=>!isOv(t)&&isToday(t)), rest=list.filter(t=>!isOv(t)&&!isToday(t));
     let h='';
-    if(ov.length) h+=renderGroup('⚠ Overdue',ov);
-    if(tod.length) h+=renderGroup('Due Today',tod);
-    if(rest.length) h+=renderGroup(view==='today'?'No Deadline':'No Due Date',rest);
-    el.innerHTML=h;
-  } else { el.innerHTML=list.map(renderTask).join(''); }
+    if (ov.length)   h += renderGroup('⚠ Overdue', ov);
+    if (tod.length)  h += renderGroup('Due Today', tod);
+    if (rest.length) h += renderGroup(view==='today'?'No Deadline':'No Due Date', rest);
+    el.innerHTML = h;
+  } else {
+    el.innerHTML = list.map(renderTask).join('');
+  }
   updateProg();
 }
-
-function renderGroup(lbl,items){ return `<div class="tgroup"><div class="tgroup-lbl">${lbl}</div>${items.map(renderTask).join('')}</div>`; }
-
+function renderGroup(lbl, items){ return `<div class="tgroup"><div class="tgroup-lbl">${lbl}</div>${items.map(renderTask).join('')}</div>`; }
 function renderTask(t){
-  const ov=isOv(t),tod=isToday(t),cls=t.done?'done':ov?'overdue':'active';
+  const ov=isOv(t), tod=isToday(t), cls=t.done?'done':ov?'overdue':'active';
   let chips='';
-  if(t.dueDate){
-    if(ov) chips+=`<span class="chip c-ov">⚠ Overdue · ${fmtD(t.dueDate)}</span>`;
-    else if(tod) chips+=`<span class="chip c-tod">Today${t.dueTime?' · '+t.dueTime:''}</span>`;
-    else chips+=`<span class="chip c-date">📅 ${fmtD(t.dueDate)}${t.dueTime?' · '+t.dueTime:''}</span>`;
+  if (t.dueDate){
+    if (ov)        chips += `<span class="chip c-ov">⚠ Overdue · ${fmtD(t.dueDate)}</span>`;
+    else if (tod)  chips += `<span class="chip c-tod">Today${t.dueTime?' · '+t.dueTime:''}</span>`;
+    else           chips += `<span class="chip c-date">📅 ${fmtD(t.dueDate)}${t.dueTime?' · '+t.dueTime:''}</span>`;
   }
-  if(t.priority==='high') chips+=`<span class="chip c-hi">High</span>`;
-  else if(t.priority==='medium') chips+=`<span class="chip c-med">Med</span>`;
-  else chips+=`<span class="chip c-lo">Low</span>`;
+  if (t.priority==='high')        chips += `<span class="chip c-hi">High</span>`;
+  else if (t.priority==='medium') chips += `<span class="chip c-med">Med</span>`;
+  else                            chips += `<span class="chip c-lo">Low</span>`;
   return `<div class="titem ${cls}" id="ti-${t.id}">
     <div class="tchk-col"><div class="chkring ${t.done?'done-r':''}" onclick="toggle('${t.id}')"></div></div>
     <div class="tbody"><div class="tname">${esc(t.name)}</div><div class="tchips">${chips}</div></div>
@@ -457,55 +519,56 @@ function renderTask(t){
 
 function updateCounts(){
   const today=new Date().toISOString().split('T')[0];
-  const active=tasks.filter(t=>!t.done), done=tasks.filter(t=>t.done), ov=tasks.filter(t=>isOv(t));
-  document.getElementById('nc-today').textContent=tasks.filter(t=>!t.done&&(t.dueDate===today||!t.dueDate||isOv(t))).length;
-  document.getElementById('nc-upcoming').textContent=tasks.filter(t=>!t.done&&t.dueDate&&t.dueDate>today).length;
-  document.getElementById('nc-all').textContent=active.length;
-  document.getElementById('nc-done').textContent=done.length;
-  document.getElementById('nc-overdue').textContent=ov.length;
-  const badge=document.getElementById('ovBadge');
-  if(ov.length){ badge.textContent=ov.length+' overdue'; badge.classList.add('show'); } else badge.classList.remove('show');
+  const ov=tasks.filter(t=>isOv(t));
+  document.getElementById('nc-today').textContent    = tasks.filter(t=>!t.done&&(t.dueDate===today||!t.dueDate||isOv(t))).length;
+  document.getElementById('nc-upcoming').textContent = tasks.filter(t=>!t.done&&t.dueDate&&t.dueDate>today).length;
+  document.getElementById('nc-all').textContent      = tasks.filter(t=>!t.done).length;
+  document.getElementById('nc-done').textContent     = tasks.filter(t=>t.done).length;
+  document.getElementById('nc-overdue').textContent  = ov.length;
+  const badge = document.getElementById('ovBadge');
+  if (ov.length){ badge.textContent=ov.length+' overdue'; badge.classList.add('show'); } else badge.classList.remove('show');
   updateProg();
 }
-
 function updateProg(){
   const total=tasks.length, done=tasks.filter(t=>t.done).length;
-  document.getElementById('progFill').style.width=(total?Math.round(done/total*100):0)+'%';
+  document.getElementById('progFill').style.width = (total ? Math.round(done/total*100) : 0)+'%';
   const left=tasks.filter(t=>!t.done).length, tdone=tasks.filter(t=>t.done).length;
-  const pct=tdone+left?Math.round(tdone/(tdone+left)*100):0;
-  document.getElementById('dpFill').style.width=pct+'%';
-  document.getElementById('dpDone').textContent=tdone+' done';
-  document.getElementById('dpLeft').textContent=left+' left';
+  const pct = tdone+left ? Math.round(tdone/(tdone+left)*100) : 0;
+  document.getElementById('dpFill').style.width = pct+'%';
+  document.getElementById('dpDone').textContent = tdone+' done';
+  document.getElementById('dpLeft').textContent = left+' left';
 }
 
-// HELPERS
-function snack(msg){ const el=document.getElementById('snack'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2800); }
+// ── HELPERS ────────────────────────────────────────────────────────
+function snack(msg){
+  const el=document.getElementById('snack'); el.textContent=msg;
+  el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2800);
+}
 function fmtD(s){
-  if(!s) return '';
+  if (!s) return '';
   const d=new Date(s+'T00:00'), t=new Date(), tm=new Date(t); tm.setDate(t.getDate()+1);
-  if(s===t.toISOString().split('T')[0]) return 'Today';
-  if(s===tm.toISOString().split('T')[0]) return 'Tomorrow';
+  if (s===t.toISOString().split('T')[0]) return 'Today';
+  if (s===tm.toISOString().split('T')[0]) return 'Tomorrow';
   return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// KEYBOARD
-document.addEventListener('keydown',e=>{
-  const tag=document.activeElement.tagName;
-  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA'){
-    if(e.key==='Enter'&&document.activeElement.id==='tName') addTask();
-    if(e.key==='Escape') document.activeElement.blur();
+// ── KEYBOARD ───────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  if (tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA'){
+    if (e.key==='Enter' && document.activeElement.id==='tName') addTask();
+    if (e.key==='Escape') document.activeElement.blur();
     return;
   }
-  if(e.key==='n'||e.key==='N'){ e.preventDefault(); document.getElementById('tName').focus(); }
+  if (e.key==='n'||e.key==='N'){ e.preventDefault(); document.getElementById('tName').focus(); }
 });
 
-// INIT
+// ── INIT ───────────────────────────────────────────────────────────
 load();
-document.getElementById('tDate').value=new Date().toISOString().split('T')[0];
+document.getElementById('tDate').value = new Date().toISOString().split('T')[0];
 render(); updateCounts(); checkPerm();
-if(Notification.permission==='granted'){ startLoop(); setTimeout(fireReminder,2500); }
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+if (Notification.permission==='granted'){ startLoop(); setTimeout(fireReminder, 2500); }
 </script>
 </body>
 </html>
